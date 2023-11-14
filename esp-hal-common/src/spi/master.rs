@@ -2712,22 +2712,30 @@ pub trait Instance {
     #[inline(never)]
     fn read_bytes_from_fifo(&mut self, words: &mut [u8]) -> Result<(), Error> {
         let reg_block = self.register_block();
+
         for chunk in words.chunks_mut(FIFO_SIZE) {
             self.configure_datalen(chunk.len() as u32 * 8);
 
             let fifo_slice =
                 unsafe { core::slice::from_raw_parts(reg_block.w0.as_ptr(), FIFO_SIZE) };
-            for (blk, index) in (0..chunk.len()).step_by(4).enumerate() {
+
+            // Precalculate the number of 4-byte blocks to copy.
+            let num_full_blocks = chunk.len() / 4;
+
+            // Copy the full 4-byte blocks.
+            for blk in 0..num_full_blocks {
                 let reg_val = fifo_slice[blk];
                 let bytes = reg_val.to_le_bytes();
+                chunk[blk * 4..(blk + 1) * 4].copy_from_slice(&bytes);
+            }
 
-                if index + 4 > chunk.len() {
-                    let len = usize::min(chunk.len(), index + 4) - index;
-                    chunk[index..(index + len)].copy_from_slice(&bytes[0..len]);
-                    break;
-                }
+            // Copy the remaining bytes.
+            let remaining_bytes = chunk.len() % 4;
 
-                chunk[index..(index + 4)].copy_from_slice(&bytes);
+            if remaining_bytes > 0 {
+                let reg_val = fifo_slice[num_full_blocks];
+                let bytes = reg_val.to_le_bytes();
+                chunk[num_full_blocks * 4..].copy_from_slice(&bytes[0..remaining_bytes]);
             }
         }
 
