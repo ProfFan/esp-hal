@@ -2709,7 +2709,6 @@ pub trait Instance {
     // FIXME: Using something like `core::slice::from_raw_parts` and
     // `copy_from_slice` on the receive registers works only for the esp32 and
     // esp32c3 varaints. The reason for this is unknown.
-    #[inline(never)]
     fn read_bytes_from_fifo(&mut self, words: &mut [u8]) -> Result<(), Error> {
         let reg_block = self.register_block();
 
