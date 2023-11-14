@@ -2628,6 +2628,7 @@ pub trait Instance {
     /// you must ensure that the whole messages was written correctly, use
     /// [`Self::flush`].
     // FIXME: See below.
+    #[inline(always)]
     fn write_bytes(&mut self, words: &[u8]) -> Result<(), Error> {
         let num_chunks = words.len() / FIFO_SIZE;
 
