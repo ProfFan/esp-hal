@@ -161,14 +161,14 @@ impl<T, const CHANNEL: u8> Alarm<T, CHANNEL> {
                     &systimer.target0_lo(),
                 ),
                 1 => (
-                    transmute(&systimer.target1_conf()),
-                    transmute(&systimer.target1_hi()),
-                    transmute(&systimer.target1_lo()),
+                    transmute(systimer.target1_conf()),
+                    transmute(systimer.target1_hi()),
+                    transmute(systimer.target1_lo()),
                 ),
                 2 => (
-                    transmute(&systimer.target2_conf()),
-                    transmute(&systimer.target2_hi()),
-                    transmute(&systimer.target2_lo()),
+                    transmute(systimer.target2_conf()),
+                    transmute(systimer.target2_hi()),
+                    transmute(systimer.target2_lo()),
                 ),
                 _ => unreachable!(),
             };
