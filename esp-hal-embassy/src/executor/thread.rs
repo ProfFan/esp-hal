@@ -102,6 +102,8 @@ This will use software-interrupt 3 which isn't available for anything else to wa
     pub fn run(&'static mut self, init: impl FnOnce(Spawner)) -> ! {
         init(self.inner.spawner());
 
+        unsafe { self.inner.initialize() };
+
         #[cfg(low_power_wait)]
         let cpu = Cpu::current() as usize;
 
